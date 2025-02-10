@@ -14,10 +14,14 @@ const int LANE_WIDTH = SCREEN_WIDTH / 9;
 SDL_Color laneDivisionColor = {180, 180, 180, 255};  // Light gray for subtle divisions
 
 // Vehicle structure to hold properties of a vehicle
+// Updated Vehicle structure
 typedef struct {
-    SDL_Rect rect;  // Rectangle for the vehicle (position and size)
+    SDL_Rect rect;  // Rectangle for position and size
     int speed;      // Speed of the vehicle
+    int targetX;    // Target X position (destination)
+    int targetY;    // Target Y position (destination)
 } Vehicle;
+
 
 // Declare the drawCircle function
 void drawCircle(SDL_Renderer *renderer, int centerX, int centerY, int radius) {
@@ -113,17 +117,13 @@ void drawVehicle(SDL_Renderer *renderer, Vehicle *vehicle) {
     SDL_RenderFillRect(renderer, &vehicle->rect);  // Draw the vehicle rectangle
 }
 
-void moveVehicle(Vehicle *vehicle) {
-    int targetX = SCREEN_WIDTH / 3 + LANE_WIDTH / 4;  // X position of A-lane
-    int targetY = SCREEN_HEIGHT / 6;  // Y position of A1
-
-    if (vehicle->rect.x < targetX) {
-        vehicle->rect.x += vehicle->speed;  // Move right first
-    } else if (vehicle->rect.y > targetY) {
-        vehicle->rect.y -= vehicle->speed;  // Move up once aligned
+void moveVehicleD3toA1(Vehicle *vehicle) {
+    if (vehicle->rect.x < vehicle->targetX) {
+        vehicle->rect.x += vehicle->speed;  // Move right
+    } else if (vehicle->rect.y > vehicle->targetY) {
+        vehicle->rect.y -= vehicle->speed;  // Move up past A1
     }
 }
-
 
 int main(int argc, char *argv[]) {
     (void)argc; (void)argv;  // Prevent unused parameter warnings
@@ -172,8 +172,16 @@ int main(int argc, char *argv[]) {
     // Render all lane names
     SDL_Color laneColor = {255, 255, 255, 255};  // White text color
 
-    // Create vehicle instance
-   Vehicle vehicle = {{167, 304, 40, 40}, 4};  // Starting at D3
+    // Create vehicle instance D3 to A1
+Vehicle vehicle1 = {
+    {0 - 40, SCREEN_HEIGHT / 3 + LANE_WIDTH / 3, 40, 40},  // Start at the far west of D3
+    4,  // Speed
+    SCREEN_WIDTH / 3 + LANE_WIDTH / 4,  // Target X (A1)
+    -40  // Target Y (Past A1 to the north end)
+};
+
+
+
   // Speed 4 pixels per frame
     int running = 1;
 
@@ -186,7 +194,9 @@ int main(int argc, char *argv[]) {
         }
 
         // Move the vehicle and redraw
-        moveVehicle(&vehicle);
+        // Move both vehicles simultaneously
+moveVehicleD3toA1(&vehicle1);  // Move D3 → A1
+
 
         // Clear screen and redraw everything
         SDL_SetRenderDrawColor(renderer, 0, 150, 0, 255);  // Green background
@@ -209,8 +219,10 @@ int main(int argc, char *argv[]) {
         renderText(renderer, font, "D2", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.1 + LANE_WIDTH / 3, laneColor);
         renderText(renderer, font, "D1", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 1.66 + LANE_WIDTH / 3, laneColor);
 
-        // Draw the moving vehicle
-        drawVehicle(renderer, &vehicle);
+
+        // Draw both vehicles on the screen
+        drawVehicle(renderer, &vehicle1);  // Draw D3 → A1 vehicle
+
 
         SDL_RenderPresent(renderer);
 
