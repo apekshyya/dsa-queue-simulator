@@ -125,6 +125,22 @@ void moveVehicleD3toA1(Vehicle *vehicle) {
     }
 }
 
+// Function to move vehicle from B3 to D1
+// 1. Moves north (decreasing Y) until aligned with D1
+// 2. Moves west (decreasing X) to reach D1
+void moveVehicleB3toD1(Vehicle *vehicle) {
+    if (vehicle->rect.y > vehicle->targetY) {
+        vehicle->rect.y -= vehicle->speed;  // Move up
+    } else if (vehicle->rect.x > vehicle->targetX) {
+        vehicle->rect.x -= vehicle->speed;  // Move left past D1
+    }
+}
+
+
+
+
+
+
 int main(int argc, char *argv[]) {
     (void)argc; (void)argv;  // Prevent unused parameter warnings
 
@@ -180,6 +196,18 @@ Vehicle vehicle1 = {
     -40  // Target Y (Past A1 to the north end)
 };
 
+// Vehicle moving from B3 to D1
+// Starting position at B3
+// Target position at D1 (aligned with D1's coordinates)
+// Vehicle moving from B3 to D1
+
+Vehicle vehicle2 = {
+    {SCREEN_WIDTH / 3 + LANE_WIDTH / 4, SCREEN_HEIGHT + 40, 40, 40},  // Start at the far south of B3
+    4,  // Speed
+    -40,  // Target X (Past D1 to the west end)
+    SCREEN_HEIGHT / 1.55  // Target Y (D1)
+};
+
 
 
   // Speed 4 pixels per frame
@@ -196,6 +224,7 @@ Vehicle vehicle1 = {
         // Move the vehicle and redraw
         // Move both vehicles simultaneously
 moveVehicleD3toA1(&vehicle1);  // Move D3 → A1
+moveVehicleB3toD1(&vehicle2);  // Move B3 → D1
 
 
         // Clear screen and redraw everything
@@ -222,6 +251,7 @@ moveVehicleD3toA1(&vehicle1);  // Move D3 → A1
 
         // Draw both vehicles on the screen
         drawVehicle(renderer, &vehicle1);  // Draw D3 → A1 vehicle
+        drawVehicle(renderer, &vehicle2);  // Draw B3 → D1 vehicle
 
 
         SDL_RenderPresent(renderer);
