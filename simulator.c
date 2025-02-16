@@ -17,6 +17,8 @@ SDL_Color laneDivisionColor = {180, 180, 180, 255};  // Light gray for subtle di
 typedef struct {
     SDL_Rect rect;  // Rectangle for the vehicle (position and size)
     int speed;      // Speed of the vehicle
+    int targetX;    // Target X position (destination)
+    int targetY;    // Target Y position (destination)
 } Vehicle;
 
 // Declare the drawCircle function
@@ -113,14 +115,39 @@ void drawVehicle(SDL_Renderer *renderer, Vehicle *vehicle) {
     SDL_RenderFillRect(renderer, &vehicle->rect);  // Draw the vehicle rectangle
 }
 
-void moveVehicle(Vehicle *vehicle) {
-    int targetX = SCREEN_WIDTH / 3 + LANE_WIDTH / 4;  // X position of A-lane
-    int targetY = SCREEN_HEIGHT / 6;  // Y position of A1
+void moveVehicleD3toA1(Vehicle *vehicle) {
+    if (vehicle->rect.x < vehicle->targetX) {
+        vehicle->rect.x += vehicle->speed;  // Move right
+    } else if (vehicle->rect.y > vehicle->targetY) {
+        vehicle->rect.y -= vehicle->speed;  // Move up past A1
+    }
+}
 
-    if (vehicle->rect.x < targetX) {
-        vehicle->rect.x += vehicle->speed;  // Move right first
-    } else if (vehicle->rect.y > targetY) {
-        vehicle->rect.y -= vehicle->speed;  // Move up once aligned
+// Function to move vehicle from B3 to D1
+// 1. Moves north (decreasing Y) until aligned with D1
+// 2. Moves west (decreasing X) to reach D1
+void moveVehicleB3toD1(Vehicle *vehicle) {
+    if (vehicle->rect.y > vehicle->targetY) {
+        vehicle->rect.y -= vehicle->speed;  // Move up
+    } else if (vehicle->rect.x > vehicle->targetX) {
+        vehicle->rect.x -= vehicle->speed;  // Move left past D1
+    }
+}
+
+void moveVehicleC3toB1(Vehicle *vehicle) {
+    if (vehicle->rect.x > vehicle->targetX) {
+        vehicle->rect.x -= vehicle->speed;  // Move west
+    } else if (vehicle->rect.y < vehicle->targetY) {
+        vehicle->rect.y += vehicle->speed;  // Move south
+    }
+}
+
+
+void moveVehicleA3toC1(Vehicle *vehicle) {
+    if (vehicle->rect.y < vehicle->targetY) {
+        vehicle->rect.y += vehicle->speed;  // Move south
+    } else if (vehicle->rect.x < vehicle->targetX) {
+        vehicle->rect.x += vehicle->speed;  // Move east
     }
 }
 
@@ -172,8 +199,44 @@ int main(int argc, char *argv[]) {
     // Render all lane names
     SDL_Color laneColor = {255, 255, 255, 255};  // White text color
 
-    // Create vehicle instance
-   Vehicle vehicle = {{167, 304, 40, 40}, 4};  // Starting at D3
+  
+    // Create vehicle instance D3 to A1
+Vehicle vehicle1 = {
+    {0 - 40, SCREEN_HEIGHT / 3 + LANE_WIDTH / 3, 40, 40},  // Start at the far west of D3
+    4,  // Speed
+    SCREEN_WIDTH / 3 + LANE_WIDTH / 4,  // Target X (A1)
+    -40  // Target Y (Past A1 to the north end)
+};
+
+// Vehicle moving from B3 to D1
+// Starting position at B3
+// Target position at D1 (aligned with D1's coordinates)
+// Vehicle moving from B3 to D1
+
+Vehicle vehicle2 = {
+    {SCREEN_WIDTH / 3 + LANE_WIDTH / 4, SCREEN_HEIGHT + 40, 40, 40},  // Start at the far south of B3
+    4,  // Speed
+    -40,  // Target X (Past D1 to the west end)
+    SCREEN_HEIGHT / 1.55  // Target Y (D1)
+};
+  // Speed 4 pixels per frame
+
+// C3 to B1: Start from east end, move west, then south
+Vehicle vehicle3 = {
+    {SCREEN_WIDTH, SCREEN_HEIGHT / 3 + 2.4 * LANE_WIDTH, 40, 40},  // Start at C3 (east end)
+    4,  // Speed
+    SCREEN_WIDTH / 1.69,  // Target X position (B1)
+    SCREEN_HEIGHT  // Target Y position (south end)
+};
+
+// A3 to C1: Start from north end, move south, then east
+Vehicle vehicle4 = {
+    {SCREEN_WIDTH / 3 + 2.4 * LANE_WIDTH, 0, 40, 40},  // Start at A3 (north end)
+    4,  // Speed
+    SCREEN_WIDTH ,  // Target X position (C1)
+    SCREEN_HEIGHT / 2.8  // Target Y position (south alignment with C1)
+};
+
   // Speed 4 pixels per frame
     int running = 1;
 
@@ -185,8 +248,13 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // Move the vehicle and redraw
-        moveVehicle(&vehicle);
+       // Move the vehicle and redraw
+        // Move both vehicles simultaneously
+moveVehicleD3toA1(&vehicle1);  // Move D3 → A1
+moveVehicleB3toD1(&vehicle2);  // Move B3 → D1
+moveVehicleC3toB1(&vehicle3);  // Move the vehicle from C3 to B1
+moveVehicleA3toC1(&vehicle4);  // Move the vehicle from A3 to C1
+
 
         // Clear screen and redraw everything
         SDL_SetRenderDrawColor(renderer, 0, 150, 0, 255);  // Green background
@@ -209,8 +277,12 @@ int main(int argc, char *argv[]) {
         renderText(renderer, font, "D2", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.1 + LANE_WIDTH / 3, laneColor);
         renderText(renderer, font, "D1", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 1.66 + LANE_WIDTH / 3, laneColor);
 
-        // Draw the moving vehicle
-        drawVehicle(renderer, &vehicle);
+        // Draw both vehicles on the screen
+        drawVehicle(renderer, &vehicle1);  // Draw D3 → A1 vehicle
+        drawVehicle(renderer, &vehicle2);  // Draw B3 → D1 vehicle
+        drawVehicle(renderer, &vehicle3);  // Draw the vehicle moving from C3 to B1
+        drawVehicle(renderer, &vehicle4);  // Draw the vehicle moving from A3 to C1
+
 
         SDL_RenderPresent(renderer);
 
