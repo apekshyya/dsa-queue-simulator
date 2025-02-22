@@ -9,17 +9,28 @@ const int SCREEN_HEIGHT = 800;  // Keeping the same height
 
 // Lane width for each lane
 const int LANE_WIDTH = SCREEN_WIDTH / 9;
-
+const int VEHICLE_SIZE = 40;
+#define MAX_VEHICLES 100
 // Lane division colors (light and subtle)
 SDL_Color laneDivisionColor = {180, 180, 180, 255};  // Light gray for subtle divisions
 
 // Vehicle structure to hold properties of a vehicle
 typedef struct {
+    char number[9];
+    char road;
+    int lane;
+    int priority;
     SDL_Rect rect;  // Rectangle for the vehicle (position and size)
+    int active;
     int speed;      // Speed of the vehicle
     int targetX;    // Target X position (destination)
     int targetY;    // Target Y position (destination)
+    float x;
+    float y;
 } Vehicle;
+
+Vehicle vehicles[MAX_VEHICLES];
+int vehicleCount = 0;
 
 // Declare the drawCircle function
 void drawCircle(SDL_Renderer *renderer, int centerX, int centerY, int radius) {
@@ -150,6 +161,120 @@ void moveVehicleA3toC1(Vehicle *vehicle) {
         vehicle->rect.x += vehicle->speed;  // Move east
     }
 }
+void readVehicleFiles() {
+    char* roads = "ABCD";
+    char filename[20];
+    char line[100];
+    
+    for(size_t i = 0; i < strlen(roads); i++) {
+        snprintf(filename, sizeof(filename), "lane%c.txt", roads[i]);
+        FILE* file = fopen(filename, "r");
+        if(!file) continue;
+
+        while(fgets(line, sizeof(line), file) && vehicleCount < MAX_VEHICLES) {
+            char number[9];
+            char road;
+            int lane, priority;
+            
+            sscanf(line, "%[^:]:%c%d:%d", number, &road, &lane, &priority);
+            
+            // Check if vehicle already exists
+            int exists = 0;
+            for(int j = 0; j < vehicleCount; j++) {
+                if(strcmp(vehicles[j].number, number) == 0) {
+                    exists = 1;
+                    break;
+                }
+            }
+            
+            if(!exists) {
+                Vehicle* v = &vehicles[vehicleCount];
+                strcpy(v->number, number);
+                v->road = road;
+                v->lane = lane;
+                v->priority = priority;
+                v->active = 1;
+                v->speed = 4;
+                
+                // Set initial position based on road and lane
+                switch(road) {
+                    case 'A':  // Starting from top
+                        v->x = SCREEN_WIDTH/3 + (lane-1)*LANE_WIDTH + LANE_WIDTH/4;
+                        v->y = -VEHICLE_SIZE;
+                        break;
+                    case 'B':  // Starting from bottom
+                        v->x = SCREEN_WIDTH/3 + (lane-1)*LANE_WIDTH + LANE_WIDTH/4;
+                        v->y = SCREEN_HEIGHT;
+                        break;
+                    case 'C':  // Starting from right
+                        v->x = SCREEN_WIDTH;
+                        v->y = SCREEN_HEIGHT/3 + (lane-1)*LANE_WIDTH + LANE_WIDTH/4;
+                        break;
+                    case 'D':  // Starting from left
+                        v->x = -VEHICLE_SIZE;
+                        v->y = SCREEN_HEIGHT/3 + (lane-1)*LANE_WIDTH + LANE_WIDTH/4;
+                        break;
+                }
+                
+                v->rect.w = VEHICLE_SIZE;
+                v->rect.h = VEHICLE_SIZE;
+                vehicleCount++;
+            }
+        }
+        fclose(file);
+    }
+}
+
+void updateVehicles() {
+    for(int i = 0; i < vehicleCount; i++) {
+        if(!vehicles[i].active) continue;
+        
+        // Update position based on road
+        switch(vehicles[i].road) {
+            case 'D':  // Moving right then up
+                if(vehicles[i].x < SCREEN_WIDTH/3 + LANE_WIDTH/4) {
+                    vehicles[i].x += vehicles[i].speed;
+                } else if(vehicles[i].y > -VEHICLE_SIZE) {
+                    vehicles[i].y -= vehicles[i].speed;
+                } else {
+                    vehicles[i].active = 0;
+                }
+                break;
+            case 'B':  // Moving up then left
+                if(vehicles[i].y > SCREEN_HEIGHT/3 + LANE_WIDTH/4) {
+                    vehicles[i].y -= vehicles[i].speed;
+                } else if(vehicles[i].x > -VEHICLE_SIZE) {
+                    vehicles[i].x -= vehicles[i].speed;
+                } else {
+                    vehicles[i].active = 0;
+                }
+                break;
+            case 'C':  // Moving left then down
+                if(vehicles[i].x > SCREEN_WIDTH/3 + LANE_WIDTH/4) {
+                    vehicles[i].x -= vehicles[i].speed;
+                } else if(vehicles[i].y < SCREEN_HEIGHT) {
+                    vehicles[i].y += vehicles[i].speed;
+                } else {
+                    vehicles[i].active = 0;
+                }
+                break;
+            case 'A':  // Moving down then right
+                if(vehicles[i].y < SCREEN_HEIGHT/3 + LANE_WIDTH/4) {
+                    vehicles[i].y += vehicles[i].speed;
+                } else if(vehicles[i].x < SCREEN_WIDTH) {
+                    vehicles[i].x += vehicles[i].speed;
+                } else {
+                    vehicles[i].active = 0;
+                }
+                break;
+        }
+        
+        // Update rectangle position
+        vehicles[i].rect.x = (int)vehicles[i].x;
+        vehicles[i].rect.y = (int)vehicles[i].y;
+    }
+}
+
 
 
 int main(int argc, char *argv[]) {
