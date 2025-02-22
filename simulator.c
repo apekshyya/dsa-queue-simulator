@@ -327,39 +327,40 @@ int main(int argc, char *argv[]) {
   
     // Create vehicle instance D3 to A1
 Vehicle vehicle1 = {
-    {0 - 40, SCREEN_HEIGHT / 3 + LANE_WIDTH / 3, 40, 40},  // Start at the far west of D3
-    4,  // Speed
-    SCREEN_WIDTH / 3 + LANE_WIDTH / 4,  // Target X (A1)
-    -40  // Target Y (Past A1 to the north end)
+    .rect = {.x = 0 - 40, .y = SCREEN_HEIGHT / 3 + LANE_WIDTH / 3, .w = 40, .h = 40},
+    .speed = 4,
+    .targetX = SCREEN_WIDTH / 3 + LANE_WIDTH / 4,
+    .targetY = -40
 };
-
 // Vehicle moving from B3 to D1
 // Starting position at B3
 // Target position at D1 (aligned with D1's coordinates)
 // Vehicle moving from B3 to D1
 
+
+  
+// B3 to D1: Start from the far south of B3
 Vehicle vehicle2 = {
-    {SCREEN_WIDTH / 3 + LANE_WIDTH / 4, SCREEN_HEIGHT + 40, 40, 40},  // Start at the far south of B3
-    4,  // Speed
-    -40,  // Target X (Past D1 to the west end)
-    SCREEN_HEIGHT / 1.55  // Target Y (D1)
+    .rect = {.x = SCREEN_WIDTH / 3 + LANE_WIDTH / 4, .y = SCREEN_HEIGHT + 40, .w = 40, .h = 40},
+    .speed = 4,
+    .targetX = -40,  // Past D1 to the west end
+    .targetY = SCREEN_HEIGHT / 1.55  // D1
 };
-  // Speed 4 pixels per frame
 
 // C3 to B1: Start from east end, move west, then south
 Vehicle vehicle3 = {
-    {SCREEN_WIDTH, SCREEN_HEIGHT / 3 + 2.4 * LANE_WIDTH, 40, 40},  // Start at C3 (east end)
-    4,  // Speed
-    SCREEN_WIDTH / 1.69,  // Target X position (B1)
-    SCREEN_HEIGHT  // Target Y position (south end)
+    .rect = {.x = SCREEN_WIDTH, .y = SCREEN_HEIGHT / 3 + 2.4 * LANE_WIDTH, .w = 40, .h = 40},
+    .speed = 4,
+    .targetX = SCREEN_WIDTH / 1.69,  // B1
+    .targetY = SCREEN_HEIGHT  // South end
 };
 
 // A3 to C1: Start from north end, move south, then east
 Vehicle vehicle4 = {
-    {SCREEN_WIDTH / 3 + 2.4 * LANE_WIDTH, 0, 40, 40},  // Start at A3 (north end)
-    4,  // Speed
-    SCREEN_WIDTH ,  // Target X position (C1)
-    SCREEN_HEIGHT / 2.8  // Target Y position (south alignment with C1)
+    .rect = {.x = SCREEN_WIDTH / 3 + 2.4 * LANE_WIDTH, .y = 0, .w = 40, .h = 40},
+    .speed = 4,
+    .targetX = SCREEN_WIDTH,  // C1
+    .targetY = SCREEN_HEIGHT / 2.8  // South alignment with C1
 };
 
   // Speed 4 pixels per frame
@@ -380,13 +381,34 @@ moveVehicleB3toD1(&vehicle2);  // Move B3 → D1
 moveVehicleC3toB1(&vehicle3);  // Move the vehicle from C3 to B1
 moveVehicleA3toC1(&vehicle4);  // Move the vehicle from A3 to C1
 
+    int running = 1;
+    while (running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = 0;
+            }
+        }
 
+        // Read new vehicles from files
+        readVehicleFiles();
+        
+        // Update vehicle positions
+        updateVehicles();
+        
         // Clear screen and redraw everything
         SDL_SetRenderDrawColor(renderer, 0, 150, 0, 255);  // Green background
         SDL_RenderClear(renderer);
 
         drawCrossroad(renderer);  // Draw the roads
         drawTrafficLights(renderer);  // Draw traffic lights
+
+         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        for(int i = 0; i < vehicleCount; i++) {
+            if(vehicles[i].active) {
+                SDL_RenderFillRect(renderer, &vehicles[i].rect);
+            }
+        }
 
         // Render lane names
         renderText(renderer, font, "A1", SCREEN_WIDTH / 3 + LANE_WIDTH / 4, SCREEN_HEIGHT / 6, laneColor);
