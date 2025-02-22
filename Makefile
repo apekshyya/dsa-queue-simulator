@@ -3,19 +3,26 @@ CC = clang
 CFLAGS = -Wall -Wextra -g -I/opt/homebrew/include
 LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf -lm
 
-# Target executable name
-TARGET = simulator
+# Target executables
+SIMULATOR = simulator
+GENERATOR = generator
 
 # Source files
-SRCS = simulator.c
-OBJS = $(SRCS:.c=.o)
+SIMULATOR_SRCS = simulator.c
+GENERATOR_SRCS = traffic_generator.c
+SIMULATOR_OBJS = $(SIMULATOR_SRCS:.c=.o)
+GENERATOR_OBJS = $(GENERATOR_SRCS:.c=.o)
 
-# Default target
-all: $(TARGET)
+# Default target - build both programs
+all: $(SIMULATOR) $(GENERATOR)
 
-# Linking the executable
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
+# Linking the simulator
+$(SIMULATOR): $(SIMULATOR_OBJS)
+	$(CC) $(SIMULATOR_OBJS) -o $(SIMULATOR) $(LDFLAGS)
+
+# Linking the generator (note: no SDL flags needed)
+$(GENERATOR): $(GENERATOR_OBJS)
+	$(CC) $(GENERATOR_OBJS) -o $(GENERATOR)
 
 # Compiling source files
 %.o: %.c
@@ -23,11 +30,21 @@ $(TARGET): $(OBJS)
 
 # Clean target
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(SIMULATOR_OBJS) $(GENERATOR_OBJS) $(SIMULATOR) $(GENERATOR) laneA.txt laneB.txt laneC.txt laneD.txt
 
-# Run target
-run: $(TARGET)
-	./$(TARGET)
+# Run targets
+run-simulator: $(SIMULATOR)
+	./$(SIMULATOR)
+
+run-generator: $(GENERATOR)
+	./$(GENERATOR)
+
+# Run both programs (needs two terminal windows)
+run:
+	@echo "Starting Traffic Generator..."
+	@osascript -e 'tell application "Terminal" to do script "cd $(shell pwd) && ./$(GENERATOR)"'
+	@echo "Starting Simulator..."
+	./$(SIMULATOR)
 
 # Phony targets
-.PHONY: all clean run
+.PHONY: all clean run run-simulator run-generator
