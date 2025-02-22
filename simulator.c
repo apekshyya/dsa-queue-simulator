@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 
+
 const int SCREEN_WIDTH = 1000;  // Increased screen width (wider screen)
 const int SCREEN_HEIGHT = 800;  // Keeping the same height
 
@@ -136,7 +137,22 @@ void moveVehicleB3toD1(Vehicle *vehicle) {
     }
 }
 
+void moveVehicleC3toB1(Vehicle *vehicle) {
+    if (vehicle->rect.x > vehicle->targetX) {
+        vehicle->rect.x -= vehicle->speed;  // Move west
+    } else if (vehicle->rect.y < vehicle->targetY) {
+        vehicle->rect.y += vehicle->speed;  // Move south
+    }
+}
 
+
+void moveVehicleA3toC1(Vehicle *vehicle) {
+    if (vehicle->rect.y < vehicle->targetY) {
+        vehicle->rect.y += vehicle->speed;  // Move south
+    } else if (vehicle->rect.x < vehicle->targetX) {
+        vehicle->rect.x += vehicle->speed;  // Move east
+    }
+}
 
 
 
@@ -207,10 +223,27 @@ Vehicle vehicle2 = {
     -40,  // Target X (Past D1 to the west end)
     SCREEN_HEIGHT / 1.55  // Target Y (D1)
 };
-
-
-
   // Speed 4 pixels per frame
+
+// C3 to B1: Start from east end, move west, then south
+Vehicle vehicle3 = {
+    {SCREEN_WIDTH, SCREEN_HEIGHT / 3 + 2.4 * LANE_WIDTH, 40, 40},  // Start at C3 (east end)
+    4,  // Speed
+    SCREEN_WIDTH / 1.69,  // Target X position (B1)
+    SCREEN_HEIGHT  // Target Y position (south end)
+};
+
+// A3 to C1: Start from north end, move south, then east
+Vehicle vehicle4 = {
+    {SCREEN_WIDTH / 3 + 2.4 * LANE_WIDTH, 0, 40, 40},  // Start at A3 (north end)
+    4,  // Speed
+    SCREEN_WIDTH ,  // Target X position (C1)
+    SCREEN_HEIGHT / 2.8  // Target Y position (south alignment with C1)
+};
+
+
+
+
     int running = 1;
 
     while (running) {
@@ -225,6 +258,10 @@ Vehicle vehicle2 = {
         // Move both vehicles simultaneously
 moveVehicleD3toA1(&vehicle1);  // Move D3 → A1
 moveVehicleB3toD1(&vehicle2);  // Move B3 → D1
+moveVehicleC3toB1(&vehicle3);  // Move the vehicle from C3 to B1
+moveVehicleA3toC1(&vehicle4);  // Move the vehicle from A3 to C1
+
+
 
 
         // Clear screen and redraw everything
@@ -252,6 +289,10 @@ moveVehicleB3toD1(&vehicle2);  // Move B3 → D1
         // Draw both vehicles on the screen
         drawVehicle(renderer, &vehicle1);  // Draw D3 → A1 vehicle
         drawVehicle(renderer, &vehicle2);  // Draw B3 → D1 vehicle
+        drawVehicle(renderer, &vehicle3);  // Draw the vehicle moving from C3 to B1
+        drawVehicle(renderer, &vehicle4);  // Draw the vehicle moving from A3 to C1
+
+
 
 
         SDL_RenderPresent(renderer);
