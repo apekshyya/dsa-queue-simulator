@@ -1,3 +1,4 @@
+
 # Compiler and flags
 CC = clang
 CFLAGS = -Wall -Wextra -g -I/opt/homebrew/include
@@ -48,3 +49,6 @@ run:
 
 # Phony targets
 .PHONY: all clean run run-simulator run-generator
+
+
+
