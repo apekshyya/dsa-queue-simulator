@@ -1,5 +1,4 @@
 
-
 # Compiler and flags
 CC = clang
 CFLAGS = -Wall -Wextra -g -I/opt/homebrew/include
@@ -10,7 +9,7 @@ SIMULATOR = simulator
 GENERATOR = generator
 
 # Source files
-SIMULATOR_SRCS = simulator.c
+SIMULATOR_SRCS = simulator.c queue.c  # Include queue.c
 GENERATOR_SRCS = traffic_generator.c
 SIMULATOR_OBJS = $(SIMULATOR_SRCS:.c=.o)
 GENERATOR_OBJS = $(GENERATOR_SRCS:.c=.o)
@@ -50,6 +49,7 @@ run:
 
 # Phony targets
 .PHONY: all clean run run-simulator run-generator
+
 
 
 
