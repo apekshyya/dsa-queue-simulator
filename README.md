@@ -51,7 +51,21 @@ $ make clean
 
 ## Project Structure 
 
-simulator.c - Main simulation program with SDL2 visualization
-queue.c - Queue data structure implementation
-traffic_generator.c - Program to generate traffic patterns
-Makefile - Build configuration
+1. simulator.c - Main simulation program with SDL2 visualization
+2. queue.c - Queue data structure implementation
+3. traffic_generator.c - Program to generate traffic patterns
+4. Makefile - Build configuration
+
+## Implementation Details 
+
+1. Queue-based vehicle management system
+2. Multi-lane traffic simulation (Lanes A, B, C, and D)
+3. Real-time visualization with SDL2
+4. Traffic flow generation and processing
+
+## Future Enhancements
+
+1. Add traffic signals and intersection management
+2. Implement advanced vehicle behavior algorithms
+3. Include statistical analysis of traffic flow
+4. Add user interface for parameter adjustments
