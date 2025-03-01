@@ -1,71 +1,126 @@
-# dsa-queue-simulator
-Traffic Light Simulation using Queues : A mini project that simulates traffic management at a junction using linear data structures with optional priority handling for high-traffic lanes.
+# DSA Queue Simulator
 
-## Descriptions :
+##  Traffic Light Simulation using Queues
+This project is a **traffic simulation** implemented in **C** using the **SDL2** library. It simulates a **four-way intersection** with vehicles moving in different directions, traffic lights, and queue-based vehicle management. The simulation is visualized in real-time using **SDL2's rendering capabilities**.
 
-This traffic simulation project developed in C language that implements queue data structures and uses SDL2 for visualization.This project consists of two main components:
-1. A traffic generator that creates traffic patterns
-2. A simulator that visualizes traffic flow using SDL2 graphics
+---
+##  Table of Contents
+- [Installation](#installation)
+- [Dependencies](#dependencies)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Key Features](#key-features)
+- [References for SDL2](#references-for-sdl2)
+- [Demo](#demo)
+- [Contributing](#contributing)
+- [License](#license)
 
-The simulation demonstrates the practical application of queue data structures in traffic management, handling vehicle movement across multiple lanes.
+---
+## Installations
 
-## Components
-1. Traffic Generator: Creates traffic patterns and writes them to lane files (laneA.txt, laneB.txt, laneC.txt, laneD.txt)
-2. Traffic Simulator: Reads the generated traffic data, implements queue operations, and visualizes traffic using SDL2
+### Prerequisites
+Before running the simulation, ensure you have the following installed:
+- A **C compiler** (e.g., `gcc` or `clang`)
+- **SDL2** library and **SDL2 development headers**
+- **Make** (for building the project)
 
-## Prerequisites:
-1. C compiler (Clang recommended)
-2. SDL2 and SDL2_ttf libraries
-3. Make
+### Steps to Install and Run
+#### 1️⃣ Clone the Repository
+```sh
+$ git clone https://github.com/apekshyya/dsa-queue-simulator.git
+$ cd dsa-queue-simulator
+```
 
-## Installations 
-
-Step 1 : Clone the repository 
-https://github.com/apekshyya/dsa-queue-simulator.git
-
-Step 2 : Install Required Libraries
-# On macOS (using Homebrew)
+#### 2️⃣ Install Required Libraries
+**For macOS (Homebrew):**
+```sh
 $ brew install sdl2 sdl2_ttf
-
-# On Ubuntu/Debian
+```
+**For Ubuntu/Debian:**
+```sh
 $ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+```
 
-Step 3 : Compile and Run
-# Navigate to the project directory
-$ cd traffic-simulator-queue
+#### 3️⃣ Compile and Run the Project
+```sh
+$ make          # Compile the project
+$ make run      # Run both the generator and simulator
+$ make clean    # Remove compiled files and data
+```
+To run them separately:
+```sh
+$ make run-generator  # Run the traffic generator
+$ make run-simulator  # Run the traffic simulator
+```
 
-# Compile both components
-$ make
+---
+## Dependencies
+- **SDL2**: Used for rendering the simulation and handling window management.
+- **Standard C Libraries**: Used for I/O, memory management, and queue operations.
+- **Make**: Automates the build process.
 
-# Run the generator
-$ make run-generator
+---
+## Usage
+The simulation runs in a **window** and displays **vehicles moving through a four-way intersection**. Traffic lights control the flow of vehicles, ensuring organized movement and realistic queuing behavior.
 
-# Run the simulator
-$ make run-simulator
+###  Controls
+- **Close the Window**: Click the close button or press **ESC**.
+- **Traffic Light Timing**: Traffic lights automatically switch every few seconds.
 
-# Run both applications (opens a new terminal for the generator)
-$ make run
+---
+## 📂 Project Structure
+```
+dsa-queue-simulator/
+├── simulator.c         # Main simulation program
+├── queue.c             # Queue data structure implementation
+├── traffic_generator.c # Traffic pattern generator
+├── Makefile            # Build script
+├── README.md           # Project documentation
+├── LICENSE             # License information
+│
+├── assets/
+│   └── ARIAL.TTF       # Font for SDL2 rendering
+│
+├── data/
+│   ├── laneA.txt       # Traffic data for lane A
+│   ├── laneB.txt       # Traffic data for lane B
+│   ├── laneC.txt       # Traffic data for lane C
+│   ├── laneD.txt       # Traffic data for lane D
+```
 
-# Clean up compiled files and generated data
-$ make clean
+---
+## Key Features
+### 1. Vehicle Management
+- Vehicles are represented as structures with properties like **position**, **speed**, and **lane**.
+- A **queue system** manages vehicles entering and leaving the simulation.
 
-## Project Structure 
+### 2. Traffic Light Control
+- Traffic lights switch states automatically at fixed intervals.
+- Vehicles **stop** at red lights and **move** on green signals.
 
-1. simulator.c - Main simulation program with SDL2 visualization
-2. queue.c - Queue data structure implementation
-3. traffic_generator.c - Program to generate traffic patterns
-4. Makefile - Build configuration
+### 3. SDL2-Based Rendering
+- **Real-time traffic visualization** with SDL2.
+- Roads, lanes, and traffic lights are drawn dynamically.
 
-## Implementation Details 
+### 4. Lane Prioritization
+- Some lanes have higher priority depending on traffic rules.
+- Vehicles in **non-priority lanes** must wait longer if there is congestion.
 
-1. Queue-based vehicle management system
-2. Multi-lane traffic simulation (Lanes A, B, C, and D)
-3. Real-time visualization with SDL2
-4. Traffic flow generation and processing
+---
+## 5. References for SDL2
+- [Official SDL2 Documentation](https://wiki.libsdl.org/)
+- [SDL2 GitHub Repository](https://github.com/libsdl-org/SDL)
 
-## Future Enhancements
+---
+##  Demo
 
-1. Add traffic signals and intersection management
-2. Implement advanced vehicle behavior algorithms
-3. Include statistical analysis of traffic flow
-4. Add user interface for parameter adjustments
+
+---
+
+## License
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+
+---
+
+
+
