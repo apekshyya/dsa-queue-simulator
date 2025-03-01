@@ -12,7 +12,6 @@ This project is a **traffic simulation** implemented in **C** using the **SDL2**
 - [Key Features](#key-features)
 - [References for SDL2](#references-for-sdl2)
 - [Demo](#demo)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
