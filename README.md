@@ -25,13 +25,13 @@ Before running the simulation, ensure you have the following installed:
 - **Make** (for building the project)
 
 ### Steps to Install and Run
-#### 1️⃣ Clone the Repository
+#### 1️. Clone the Repository
 ```sh
 $ git clone https://github.com/apekshyya/dsa-queue-simulator.git
 $ cd dsa-queue-simulator
 ```
 
-#### 2️⃣ Install Required Libraries
+#### 2️. Install Required Libraries
 **For macOS (Homebrew):**
 ```sh
 $ brew install sdl2 sdl2_ttf
@@ -41,7 +41,7 @@ $ brew install sdl2 sdl2_ttf
 $ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 ```
 
-#### 3️⃣ Compile and Run the Project
+#### 3️. Compile and Run the Project
 ```sh
 $ make          # Compile the project
 $ make run      # Run both the generator and simulator
@@ -68,7 +68,7 @@ The simulation runs in a **window** and displays **vehicles moving through a fou
 - **Traffic Light Timing**: Traffic lights automatically switch every few seconds.
 
 ---
-## 📂 Project Structure
+##  Project Structure
 ```
 dsa-queue-simulator/
 ├── simulator.c         # Main simulation program
